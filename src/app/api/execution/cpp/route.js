@@ -1,9 +1,13 @@
 import { exec } from "child_process";
 import { promisify } from "util";
-import { writeFile, readFile } from "fs";
+import { writeFile, unlink } from "fs/promises";
 import path from "path";
 
 export async function POST(req) {
+  const execResult = {
+    output: null,
+    error: null,
+  };
   try {
     const tempCppCode = path.join(__dirname, "temp.cpp");
     const tempOutputFile = path.join(__dirname, "output");
@@ -11,23 +15,9 @@ export async function POST(req) {
     const execAsync = promisify(exec);
     // console.log(reqJson);
     const { code } = reqJson;
-    const execResult = {
-      output: null,
-      error: null,
-    };
     // console.log(code);
 
-    writeFile(tempCppCode, code, (err) => {
-      if (err) throw err;
-
-      // readFile(tempOutputFile, "utf8", (err, data) => {
-      //   if (err) {
-      //     return new Response(JSON.stringify({ error: err }));
-      //   }
-
-      //   return new Response(JSON.stringify({ output: data }));
-      // });
-    });
+    await writeFile(tempCppCode, code);
     const { stdout, stderr } = await execAsync(
       `g++ "${tempCppCode}" -o "${tempOutputFile}" && "${tempOutputFile}"`
     );
@@ -36,13 +26,13 @@ export async function POST(req) {
     } else {
       execResult.output = stdout;
     }
+
+    await unlink(tempCppCode);
+
     return new Response(JSON.stringify(execResult));
   } catch (err) {
     console.log(err);
-    return new Response(
-      JSON.stringify({
-        error: "Error in server. Cannot run the code at the moment.",
-      })
-    );
+    execResult.error = err.stderr;
+    return new Response(JSON.stringify(execResult));
   }
 }
