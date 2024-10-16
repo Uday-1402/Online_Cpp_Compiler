@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: online-cpp-compiler-deployment
+  labels:
+    app: cpp-compiler-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cpp-compiler-app
+  template:
+    metadata:
+      labels:
+        app: cpp-compiler-app
+    spec:
+      containers:
+      - name: cpp-compiler-app
+        image: uday14022001/online-cpp-compiler:v1.0
+        ports:
+        - containerPort: 3000
