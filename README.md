@@ -15,11 +15,3 @@ Once you have docker installed simply pull the image from docker hub, using belo
 ## Video presentation 
 Check out the video here :-
 https://drive.google.com/file/d/1OyVDN2tSQt6ni3N3rh0jSTdGr3AQtxI8/view?usp=drive_link
-
-## What is coming up
-- Deployment for online access by anywhere.
-
-## How to do it
-- The main issue with its service is that we cannot requests come to our personal system where the g++ compiler resides.
-- So, we can set up an EC2 instance where we can install required packages including the compiler.
-- We can then use docker image of the app to deploy it on AWS using kubernetes.
